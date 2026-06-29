@@ -1,0 +1,154 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Google Sans", Arial, sans-serif;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, serif;
+  --font-google: "Product Sans", "Google Sans", Arial, sans-serif;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.18 0.01 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.01 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.01 260);
+  --primary: oklch(0.55 0.21 260);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.005 260);
+  --secondary-foreground: oklch(0.22 0.02 260);
+  --muted: oklch(0.96 0.005 260);
+  --muted-foreground: oklch(0.5 0.01 260);
+  --accent: oklch(0.96 0.005 260);
+  --accent-foreground: oklch(0.22 0.02 260);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.92 0.005 260);
+  --input: oklch(0.92 0.005 260);
+  --ring: oklch(0.55 0.21 260);
+  --chart-1: oklch(0.65 0.2 35);
+  --chart-2: oklch(0.6 0.15 180);
+  --chart-3: oklch(0.55 0.12 220);
+  --chart-4: oklch(0.7 0.18 90);
+  --chart-5: oklch(0.62 0.2 320);
+
+  --serp-link: #1a0dab;
+  --serp-url: #006621;
+  --serp-snippet-bg: #f8f9fa;
+  --serp-ai-bg: #f0f4ff;
+  --serp-ai-border: #c7d4ff;
+
+  --kh-purple: #6b4ef7;
+  --kh-purple-light: #8a72f9;
+  --kh-purple-xlight: #ece7ff;
+  --kh-purple-mid: #b8a9fb;
+  --kh-gray-50: #fafafa;
+  --kh-gray-100: #f3f3f4;
+  --kh-gray-200: #e7e7ea;
+  --kh-gray-300: #d1d1d6;
+  --kh-gray-400: #9fa0a8;
+  --kh-gray-600: #5a5b66;
+  --kh-gray-800: #2a2b33;
+  --kh-gray-900: #16171c;
+}
+
+.dark {
+  --background: oklch(0.16 0.01 260);
+  --foreground: oklch(0.96 0.005 260);
+  --card: oklch(0.2 0.01 260);
+  --card-foreground: oklch(0.96 0.005 260);
+  --popover: oklch(0.2 0.01 260);
+  --popover-foreground: oklch(0.96 0.005 260);
+  --primary: oklch(0.7 0.18 260);
+  --primary-foreground: oklch(0.16 0.01 260);
+  --secondary: oklch(0.25 0.01 260);
+  --secondary-foreground: oklch(0.96 0.005 260);
+  --muted: oklch(0.25 0.01 260);
+  --muted-foreground: oklch(0.7 0.01 260);
+  --accent: oklch(0.27 0.02 260);
+  --accent-foreground: oklch(0.96 0.005 260);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.3 0.01 260);
+  --input: oklch(0.3 0.01 260);
+  --ring: oklch(0.7 0.18 260);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@keyframes rotate-placeholder {
+  0%, 18% { opacity: 0; transform: translateY(8px); }
+  4%, 14% { opacity: 1; transform: translateY(0); }
+  20%, 100% { opacity: 0; transform: translateY(-8px); }
+}
+
+@keyframes kh-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.kh-root {
+  font-family: var(--font-sans);
+  color: var(--kh-gray-900);
+  background: var(--kh-gray-50);
+}
+
+.kh-root .kh-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.kh-root .kh-fade-up {
+  animation: kh-fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.cs-root {
+  background: #fafaf7;
+  color: #1a1a1a;
+  font-family: var(--font-serif);
+}
+
+.cs-root .cs-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}

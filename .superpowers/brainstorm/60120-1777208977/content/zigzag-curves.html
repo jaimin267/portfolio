@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Experience Roadmap — Curved</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0f1e;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .page-header {
+    padding: 48px 24px 12px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .back-link {
+    font-size: 12px;
+    color: #64748b;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .page-title {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #e2e8f0, #67e8f9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 40px;
+  }
+
+  /* ---- Roadmap wrapper — relative so SVG overlay aligns ---- */
+  .roadmap-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    position: relative;
+  }
+
+  /* ---- SVG overlay draws the curves behind cards ---- */
+  .curves-svg {
+    position: absolute;
+    top: 0; left: 24px; right: 24px;
+    width: calc(100% - 48px);
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .curve-path {
+    fill: none;
+    stroke: url(#curveGrad);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    transition: stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1);
+  }
+  .curve-path.drawn {
+    stroke-dashoffset: 0;
+  }
+
+  /* ---- Steps ---- */
+  .step {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 0;
+  }
+  .step.left  { flex-direction: row; }
+  .step.right { flex-direction: row-reverse; }
+
+  .checkpoint {
+    width: calc(50% - 40px);
+    background: #0f1729;
+    border: 1px solid rgba(34,211,238,0.18);
+    border-radius: 16px;
+    padding: 24px;
+    flex-shrink: 0;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s, box-shadow 0.3s;
+  }
+  .checkpoint.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .checkpoint:hover {
+    border-color: rgba(34,211,238,0.45);
+    box-shadow: 0 0 32px rgba(34,211,238,0.08);
+  }
+
+  .level-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #22d3ee;
+    margin-bottom: 4px;
+    font-family: monospace;
+  }
+  .checkpoint-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 3px;
+    letter-spacing: -0.3px;
+  }
+  .checkpoint-period {
+    font-size: 11px;
+    color: #475569;
+    margin-bottom: 12px;
+  }
+  .checkpoint-desc {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .unlocked-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #475569;
+    margin-bottom: 8px;
+  }
+  .skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .skill-badge {
+    background: rgba(34,211,238,0.07);
+    border: 1px solid rgba(34,211,238,0.22);
+    color: #67e8f9;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .skill-badge .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #22d3ee;
+    box-shadow: 0 0 5px #22d3ee;
+    flex-shrink: 0;
+  }
+
+  /* ---- Center node ---- */
+  .node-wrap {
+    width: 80px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    padding-top: 22px;
+  }
+  .node-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border: 2px solid rgba(34,211,238,0.45);
+    background: #0a0f1e;
+    box-shadow: 0 0 20px rgba(34,211,238,0.18);
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.4s 0.15s ease, transform 0.4s 0.15s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .node-circle.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .step-gap { height: 80px; }
+
+  /* ---- CTA ---- */
+  .cta-bar {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0f1729;
+    border: 1px solid rgba(34,211,238,0.18);
+    border-radius: 16px;
+    padding: 24px 28px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .cta-btn {
+    background: linear-gradient(135deg,#06b6d4,#3b82f6);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .scroll-note {
+    text-align: center;
+    color: #1e293b;
+    font-size: 11px;
+    padding: 20px 0 0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <a class="back-link" href="#">← Back to search</a>
+  <h1 class="page-title">The Journey</h1>
+  <p class="page-subtitle">4 levels · 16 skills unlocked · scroll to trace the path</p>
+</div>
+
+<div class="roadmap-wrap" id="roadmap">
+
+  <!-- SVG overlay for curves -->
+  <svg class="curves-svg" id="curvesSvg" height="1200">
+    <defs>
+      <linearGradient id="curveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%"   stop-color="#22d3ee" stop-opacity="0.9"/>
+        <stop offset="50%"  stop-color="#3b82f6" stop-opacity="0.7"/>
+        <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.9"/>
+      </linearGradient>
+    </defs>
+    <!-- Paths drawn by JS after layout -->
+    <path id="curve1" class="curve-path" d=""/>
+    <path id="curve2" class="curve-path" d=""/>
+    <path id="curve3" class="curve-path" d=""/>
+  </svg>
+
+  <!-- Step 1 — left -->
+  <div class="step left" data-step="1">
+    <div class="checkpoint" id="cp1">
+      <div class="level-label">Level 01 · 2021 – 2023</div>
+      <div class="checkpoint-title">The Builder</div>
+      <div class="checkpoint-period">Full-stack development era</div>
+      <div class="checkpoint-desc">Built and shipped a full-stack social media platform solo — 10k+ users at peak. This is where the product-led SEO instinct was forged.</div>
+      <div class="unlocked-label">Skills unlocked</div>
+      <div class="skills">
+        <span class="skill-badge"><span class="dot"></span>Full-stack Dev</span>
+        <span class="skill-badge"><span class="dot"></span>Systems Design</span>
+        <span class="skill-badge"><span class="dot"></span>Product Thinking</span>
+        <span class="skill-badge"><span class="dot"></span>Databases &amp; APIs</span>
+      </div>
+    </div>
+    <div class="node-wrap"><div class="node-circle" id="node1">🚀</div></div>
+    <div style="flex:1"></div>
+  </div>
+
+  <div class="step-gap"></div>
+
+  <!-- Step 2 — right -->
+  <div class="step right" data-step="2">
+    <div class="checkpoint" id="cp2">
+      <div class="level-label">Level 02 · Mar 2024</div>
+      <div class="checkpoint-title">SEO Foundations</div>
+      <div class="checkpoint-period">First engagement · B2B SaaS</div>
+      <div class="checkpoint-desc">Crawled, audited, and rebuilt the technical foundation. Fixed robots.txt disasters. Recovered 94% indexation in 72h.</div>
+      <div class="unlocked-label">Skills unlocked</div>
+      <div class="skills">
+        <span class="skill-badge"><span class="dot"></span>Technical SEO</span>
+        <span class="skill-badge"><span class="dot"></span>Site Architecture</span>
+        <span class="skill-badge"><span class="dot"></span>Schema Markup</span>
+        <span class="skill-badge"><span class="dot"></span>Screaming Frog</span>
+      </div>
+    </div>
+    <div class="node-wrap"><div class="node-circle" id="node2">🔧</div></div>
+    <div style="flex:1"></div>
+  </div>
+
+  <div class="step-gap"></div>
+
+  <!-- Step 3 — left -->
+  <div class="step left" data-step="3">
+    <div class="checkpoint" id="cp3">
+      <div class="level-label">Level 03 · Apr – Jun 2024</div>
+      <div class="checkpoint-title">Growth Sprint</div>
+      <div class="checkpoint-period">177% traffic · 25+ keywords top-10</div>
+      <div class="checkpoint-desc">Content clusters, internal linking rebuild, Core Web Vitals overhaul. 9,445 → 26,180 monthly organic visitors.</div>
+      <div class="unlocked-label">Skills unlocked</div>
+      <div class="skills">
+        <span class="skill-badge"><span class="dot"></span>Content SEO</span>
+        <span class="skill-badge"><span class="dot"></span>Search Intent</span>
+        <span class="skill-badge"><span class="dot"></span>SEO Analytics</span>
+        <span class="skill-badge"><span class="dot"></span>Core Web Vitals</span>
+      </div>
+    </div>
+    <div class="node-wrap"><div class="node-circle" id="node3">📈</div></div>
+    <div style="flex:1"></div>
+  </div>
+
+  <div class="step-gap"></div>
+
+  <!-- Step 4 — right -->
+  <div class="step right" data-step="4">
+    <div class="checkpoint" id="cp4" style="border-color:rgba(167,139,250,0.35);box-shadow:0 0 40px rgba(167,139,250,0.08);">
+      <div class="level-label" style="color:#a78bfa;">Level 04 · Jul 2024 – Now</div>
+      <div class="checkpoint-title">AI Frontier</div>
+      <div class="checkpoint-period">AEO · GEO · AI Overviews</div>
+      <div class="checkpoint-desc">AEO baselines across ChatGPT, Perplexity, Claude, Gemini. Researching how AI search surfaces cite and ground content.</div>
+      <div class="unlocked-label">Skills unlocked</div>
+      <div class="skills">
+        <span class="skill-badge" style="border-color:rgba(167,139,250,0.35);color:#c4b5fd;background:rgba(139,92,246,0.08)"><span class="dot" style="background:#a78bfa;box-shadow:0 0 5px #a78bfa"></span>AEO</span>
+        <span class="skill-badge" style="border-color:rgba(167,139,250,0.35);color:#c4b5fd;background:rgba(139,92,246,0.08)"><span class="dot" style="background:#a78bfa;box-shadow:0 0 5px #a78bfa"></span>GEO</span>
+        <span class="skill-badge" style="border-color:rgba(167,139,250,0.35);color:#c4b5fd;background:rgba(139,92,246,0.08)"><span class="dot" style="background:#a78bfa;box-shadow:0 0 5px #a78bfa"></span>LLM Tools</span>
+        <span class="skill-badge" style="border-color:rgba(167,139,250,0.35);color:#c4b5fd;background:rgba(139,92,246,0.08)"><span class="dot" style="background:#a78bfa;box-shadow:0 0 5px #a78bfa"></span>AI Overviews</span>
+      </div>
+    </div>
+    <div class="node-wrap"><div class="node-circle" id="node4" style="border-color:rgba(167,139,250,0.6);box-shadow:0 0 24px rgba(167,139,250,0.25);">🤖</div></div>
+    <div style="flex:1"></div>
+  </div>
+
+  <div class="cta-bar">
+    <div>
+      <div style="font-size:15px;font-weight:600;color:#f1f5f9">Open to the next level.</div>
+      <div style="font-size:13px;color:#64748b;margin-top:2px">Consulting, contract, or full-time. Fastest reply via LinkedIn.</div>
+    </div>
+    <button class="cta-btn">Get in touch →</button>
+  </div>
+
+</div>
+
+<p class="scroll-note">curves + entrance animations fire on scroll in the real build</p>
+
+<script>
+// Build cubic bezier curves between node centres
+function nodeCenter(el, container) {
+  const nr = el.getBoundingClientRect();
+  const cr = container.getBoundingClientRect();
+  return {
+    x: nr.left - cr.left + nr.width / 2,
+    y: nr.top  - cr.top  + nr.height / 2
+  };
+}
+
+function makeCurve(p1, p2) {
+  // S-curve: control points push horizontally outward from each node
+  const dx = Math.abs(p2.x - p1.x) * 1.1;
+  const c1x = p1.x + (p1.x < p2.x ? dx : -dx);
+  const c1y = p1.y + (p2.y - p1.y) * 0.35;
+  const c2x = p2.x + (p2.x < p1.x ? dx : -dx);
+  const c2y = p1.y + (p2.y - p1.y) * 0.65;
+  return `M ${p1.x} ${p1.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;
+}
+
+function init() {
+  const svg    = document.getElementById('curvesSvg');
+  const wrap   = document.getElementById('roadmap');
+  const nodes  = [1,2,3,4].map(i => document.getElementById('node'+i));
+  const curves = [1,2,3].map(i => document.getElementById('curve'+i));
+
+  // Size SVG to fit the roadmap
+  svg.setAttribute('height', wrap.scrollHeight);
+
+  // Draw paths
+  for (let i = 0; i < 3; i++) {
+    const p1 = nodeCenter(nodes[i],   wrap);
+    const p2 = nodeCenter(nodes[i+1], wrap);
+    const d  = makeCurve(p1, p2);
+    curves[i].setAttribute('d', d);
+    // Set dasharray to path length so we can animate correctly
+    const len = curves[i].getTotalLength();
+    curves[i].style.strokeDasharray  = len;
+    curves[i].style.strokeDashoffset = len;
+  }
+
+  // Trigger all animations immediately for the mockup (IntersectionObserver in real build)
+  let delay = 0;
+  [1,2,3,4].forEach(i => {
+    const cp   = document.getElementById('cp'+i);
+    const node = document.getElementById('node'+i);
+    setTimeout(() => {
+      cp.classList.add('visible');
+      node.classList.add('visible');
+      if (i <= 3) {
+        setTimeout(() => curves[i-1].classList.add('drawn'), 350);
+      }
+    }, delay);
+    delay += 700;
+  });
+}
+
+// Wait for fonts + layout
+window.addEventListener('load', () => setTimeout(init, 80));
+</script>
+</body>
+</html>
